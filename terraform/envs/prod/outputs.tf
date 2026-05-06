@@ -13,3 +13,11 @@ output "vpc_name" {
 output "subnet_name" {
   value = google_compute_subnetwork.main.name
 }
+
+output "academy_db_connection_name" {
+  value = google_sql_database_instance.academy.connection_name
+}
+
+output "academy_db_public_ip" {
+  value = google_sql_database_instance.academy.public_ip_address
+}

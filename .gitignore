@@ -6,3 +6,8 @@ terraform.tfvars
 *.key
 *.json
 .env
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars
+*.json
