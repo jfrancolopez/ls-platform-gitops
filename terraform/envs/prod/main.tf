@@ -132,3 +132,49 @@ resource "google_sql_user" "academy" {
   instance = google_sql_database_instance.academy.name
   password = random_password.academy_db_password.result
 }
+resource "google_compute_address" "traefik" {
+  name   = "traefik-ip"
+  region = var.region
+}
+
+resource "google_service_account" "academy_app" {
+  account_id   = "academy-app"
+  display_name = "Academy App"
+}
+
+resource "google_project_iam_member" "academy_cloudsql_client" {
+  project = var.project_id
+  role    = "roles/cloudsql.client"
+  member  = "serviceAccount:${google_service_account.academy_app.email}"
+}
+
+resource "google_service_account_iam_member" "academy_workload_identity" {
+  service_account_id = google_service_account.academy_app.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[academy/academy-app]"
+}
+
+resource "google_service_account" "external_secrets" {
+  account_id   = "external-secrets"
+  display_name = "External Secrets Operator for LS-Platform"
+}
+
+resource "google_project_iam_member" "external_secrets_secret_accessor" {
+  project = var.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.external_secrets.email}"
+}
+
+resource "google_service_account_iam_member" "external_secrets_workload_identity" {
+  service_account_id = google_service_account.external_secrets.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[external-secrets/external-secrets]"
+}
+
+resource "google_secret_manager_secret" "academy_db_password" {
+  secret_id = "academy-db-password"
+
+  replication {
+    auto {}
+  }
+}
