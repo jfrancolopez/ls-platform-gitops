@@ -1,13 +1,12 @@
+# Terraform
 *.tfstate
 *.tfstate.*
 .terraform/
 terraform.tfvars
+.terraform.lock.hcl
+
+# Secrets
 *.pem
 *.key
 *.json
 .env
-*.tfstate
-*.tfstate.*
-.terraform/
-terraform.tfvars
-*.json
